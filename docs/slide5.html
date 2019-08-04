@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src='https://d3js.org/d3.v5.min.js'></script>
+
+		<style>
+			div{
+				border-width : 1px; 
+				border-radius : 3px;
+				border-color : black;
+				border-style : solid;
+				padding-top : 2px;
+				padding-bottom : 2px;
+				padding-left : 3px;
+				padding-right : 3px;
+			}
+			
+			#tip{
+				opacity : 0;
+				position : absolute;
+				text-align : center;
+				width : 100;
+				height : 100;
+				background : white;
+				border-width : 1px;
+				border-style : double;
+				border-color : black;
+				border-radius : 3px;
+				padding-top : 2px;
+				padding-bottom : 2px;
+				padding-left : 3px;
+				padding-right : 3px;
+				cursor : none;
+			}
+			
+
+			
+			.link line{
+				fill : none;
+				stroke-width : 1px;
+				opacity : 0.7;
+			}
+			
+			.node circle {
+				stroke : black;
+
+			}
+			
+
+			
+		</style>
+		
+	</head>
+
+	<body onload="init()">
+		<div id = "tip"></div>
+
+		<div class="form-group" id="filters" style="float:right">
+		
+		<div> <label for="cores">Select filter criteria and </label> <button type = "submit" onclick=build() >Submit</button></div>
+		<div class="slidecontainer" id="sliders">
+		  <div><input type="range" min="1980" max="2015" value="1985" class="slider" id="minYear" step="1"> <label for="minYear">Min Year Selection </label>
+  		  </div><div><input type="range" min="1980" max="2015" value="2000" class="slider" id="maxYear" step="1"> <label for="maxYear">Max Year Selection </label>
+		  </div>
+		</div>
+		<div>
+			<fieldset id = "genrefield">      
+			<legend>Genre</legend>      
+			<input type="checkbox" id = "g0" name="Genre" value="AllG">All      
+			<input type="checkbox" id = "g1" name="Genre" value="Action"checked>Action      
+			<input type="checkbox" id = "g2" name="Genre" value="Adventure" >Adventure     <br>  
+			<input type="checkbox" id = "g3" name="Genre" value="Fighting" checked>Fighting
+			<input type="checkbox" id = "g4" name="Genre" value="Misc" >Misc      
+			<input type="checkbox" id = "g5" name="Genre" value="Racing" >Racing      <br>
+			<input type="checkbox" id = "g6" name="Genre" value="Role-Playing" checked>Role-Playing
+			<input type="checkbox" id = "g7" name="Genre" value="Platform" checked>Platform      
+			<input type="checkbox" id = "g8" name="Genre" value="Puzzle" checked>Puzzle    <br>  
+			<input type="checkbox" id = "g9" name="Genre" value="Shooter" >Shooter
+			<input type="checkbox" id = "g10" name="Genre" value="Sports" >Sports
+			<input type="checkbox" id = "g11" name="Genre" value="Simulation" >Simulation<br>      
+			<input type="checkbox" id = "g12" name="Genre" value="Strategy" >Strategy<br>      
+			<br>      
+			</fieldset>
+		</div>
+		
+		<div>
+			<fieldset>
+			<legend>Console</legend>
+			<input type="checkbox" id="p0" name="Platform" value="AllP" > All
+			<input type="checkbox" id="p1" name="Platform" value="2600" > 2600       
+			<input type="checkbox" id="p2" name="Platform" value="3DO" > 3DO      
+			<input type="checkbox" id="p3" name="Platform" value="3DS" checked> 3DS<br>
+			<input type="checkbox" id="p4" name="Platform" value="DC" > DC       
+			<input type="checkbox" id="p5" name="Platform" value="DS" > DS      
+			<input type="checkbox" id="p6" name="Platform" value="GB" checked> GBA			
+			<input type="checkbox" id="p7" name="Platform" value="GC" > GC<br>      
+			<input type="checkbox" id="p8" name="Platform" value="GEN" checked> GEN      
+			<input type="checkbox" id="p9" name="Platform" value="GG" > GG
+			<input type="checkbox" id="p10" name="Platform" value="N64" checked> N64      
+			<input type="checkbox" id="p11" name="Platform" value="NES" checked> NES<br>      
+			<input type="checkbox" id="p12" name="Platform" value="NG" > NG			
+			<input type="checkbox" id="p13" name="Platform" value="PC" checked> PC      
+			<input type="checkbox" id="p14" name="Platform" value="PCFX" > PCFX      
+			<input type="checkbox" id="p15" name="Platform" value="PS" checked> PS<br>
+			<input type="checkbox" id="p16" name="Platform" value="PS2" checked> PS2      
+			<input type="checkbox" id="p17" name="Platform" value="PS3" > PS3      
+			<input type="checkbox" id="p18" name="Platform" value="PS4" checked> PS4			
+			<input type="checkbox" id="p19" name="Platform" value="PSP" checked> PSP<br>      
+			<input type="checkbox" id="p20" name="Platform" value="PSV" > PSV   
+			<input type="checkbox" id="p21" name="Platform" value="SAT" > SAT
+			<input type="checkbox" id="p22" name="Platform" value="SCD" > SCD      
+			<input type="checkbox" id="p23" name="Platform" value="SNES" checked> SNES<br>      
+			<input type="checkbox" id="p24" name="Platform" value="TG16" > TG16			
+			<input type="checkbox" id="p25" name="Platform" value="Wii" checked> Wii
+			<input type="checkbox" id="p30" name="Platform" value="WiiU" > WiiU			
+			<input type="checkbox" id="p26" name="Platform" value="WS" checked> WS<br>      
+			<input type="checkbox" id="p27" name="Platform" value="X360" > X360 
+			<input type="checkbox" id="p28" name="Platform" value="XB" > XB      
+			<input type="checkbox" id="p29" name="Platform" value="XOne" > XOne <br>
+			</fieldset>
+		</div>
+		
+		<div>
+		<h3>Let's explore!</h3> 
+		<p>Using the filtering options above, <br>
+		see if you can find any other noteworthy <br>
+		trends in what was popular when or  <br>
+		which platforms didn't make it. 
+		</p>
+		<a href = "slide4.html" style="float:left"> Previous </a> <a href = "index.html" style="float:right"> Restart </a>
+		</div>
+		</div>
+		
+
+			
+		<div style="float:left">  
+			<svg width=1150 height=650 id=springconsoles>
+			</svg>
+		</div>
+		
+
+		
+		<script>
+		
+		var alldata;
+		var filtereddata;
+		var sim;
+		var core; 
+		var linkViz;
+		var nodeViz;
+		var colorScale;
+		var svg = d3.select("svg");
+		var margin = 50;
+		var height = +svg.attr("height");
+		var width = +svg.attr("width");
+
+		async function init(){
+		
+			data =  await d3.csv("https://raw.githubusercontent.com/cirenel/498-DV-narrative/master/vgsales.csv")
+			.then(function(data){ 
+					this.alldata = data;
+					build();
+			})
+			.catch(function(err){
+				console.log("boop "+data);
+			})
+		}
+		
+		function filter(alldata){
+				
+			var test = document.getElementById("genrefield");
+			var checks = [];
+			var i =1;
+			var allg = document.getElementById("g0").checked;
+			while(!allg && i < 13){
+				var toTest = "g"+i;
+				if(document.getElementById(toTest).checked){
+					checks.push(document.getElementById(toTest).value);
+				}				
+				i++;
+			}
+			
+			var test = document.getElementById("platformfield");
+			var platforms = [];
+			i =1;
+			var allp = document.getElementById("p0").checked;			
+			while(!allp && i < 30){
+				var toTest = "p"+i;
+				if(document.getElementById(toTest).checked){
+					platforms.push(document.getElementById(toTest).value);
+				}				
+				i++;
+			}
+			
+			var minYear = +(document.getElementById('minYear').value);
+			var maxYear = +(document.getElementById('maxYear').value);
+			
+			var filtdata = alldata;
+			
+			filtdata = filtdata.slice().sort((a,b) => d3.ascending(a.year, b.year));
+			filtdata = filtdata.filter(function(d){return d.Year=="" || d.Year >= minYear;});
+			filtdata = filtdata.filter(function(d){return d.Year=="" || d.Year <= maxYear;});
+			if (!allg) filtdata = filtdata.filter(function(d){return d.Genre=="" || checks.includes(d.Genre);});
+			if (!allp) filtdata = filtdata.filter(function(d){return d.Platform=="" || platforms.includes(d.Platform);});
+			
+			this.filtereddata = filtdata;			
+		}
+		
+		function build(){
+			svg.html("<svg width=1000 height=600 id=springconsoles></svg>");
+			filter(alldata);
+			
+			colorScale = d3.scaleSequential(d3.interpolateViridis).domain([0,8]);
+
+			sim = d3.forceSimulation()
+					.force("link", d3.forceLink().id(function(d,i){return d.id;}).distance(70))
+					.force("charge", d3.forceManyBody())
+					.force("center", d3.forceCenter(width/2, height/2));
+				
+				//build nodes []
+				//pass through data once. read in all games. make nodes for each of the cores.
+				//build links [] // game nodes linked for cores, go through data again :-T 
+				var nodes = [];
+				var links = [];
+				
+				filtereddata.forEach(function(d,i){
+					if (d.NA_Sales != ""){ //so this is hacky and gross. eval if sales is empty. if so, it's a category, continue to else if. if not, it's a game title 
+						var node = {"id" : d.Name, "ind" : i, col : colorScale(7), rad : 5, txt : d.Name +" released in "+d.Year+" by "+d.Publisher };
+						nodes.push(node);
+						
+						var link = {"source" : d.Name, "target": d.Platform, "col":colorScale(1)};
+						links.push(link);
+						link = {"source" : d.Name, "target": d.Genre, "col":colorScale(2)};
+						links.push(link);
+						link = {"source" : d.Name, "target": d.Year, "col":colorScale(4)};
+						links.push(link);
+						
+					} else if (d.Platform != ""){
+						var node = {"id" : d.Platform, "ind" : i, col : colorScale(1), rad : 15, txt : d.Platform+" " };
+						nodes.push(node);
+					} else if (d.Year != ""){
+						var node = {"id" : d.Year, "ind" : i, col : colorScale(4), rad : 15, txt : d.Year+" " };
+						nodes.push(node);
+					} else if (d.Genre != ""){
+						var node = {"id" : d.Genre, "ind" : i, col : colorScale(2), rad : 15, txt : d.Genre+" " };
+						nodes.push(node);
+					} 
+				});
+				
+				links.forEach(function(d, i){
+					if(!nodes.includes(d.source) && !nodes.includes(d.target)){
+						links.pop(i);
+					}
+				});
+				
+				sim.nodes(nodes); 
+				sim.force("link").links(links);
+				var tip = d3.select("#tip");
+				
+				linkViz = svg.append("g").attr("class", "link").selectAll("line").data(links).enter().append("line")
+				.attr("stroke", function(d){return d.col;});
+
+			
+				nodesViz = svg.selectAll(".node").data(nodes).enter().append("g").attr("class", "node")
+				                .call(d3.drag().on("start", dragstarted).on("drag",dragged).on("end", dragend));
+				nodesViz.on("mouseover", function (d, i){
+									tip.style("opacity", 1)
+									.style("left", (d3.event.pageX +8)+"px")
+									.style("top", (d3.event.pageY -5)+"px")
+									.html(d.txt);})
+								.on("mouseout", function(){
+									tip.style("opacity", 0);});
+				
+				nodesViz.append("circle").data(nodes).attr("r", function(d){ return d.rad;}).attr("fill", function(d){return d.col;}); 
+				nodesViz.append("text").data(nodes).attr("text-anchor", "middle").attr("fill","gainsboro").attr("font-size","12")
+				.attr("cursor","none").attr("transform","translate(0,5)").text(function(d){
+					if(d.col == colorScale(2)+"" || d.col == colorScale(4)+"" || d.col == colorScale(1)+""){
+						return d.id
+						}
+					else return "";});
+				
+				
+				sim.on("tick", ticked);
+				
+
+		}
+			
+		
+		function dragstarted(d){
+			if(!d3.event.active) sim.alphaTarget(0.3).restart();
+			d.fx = d.x;
+			d.fy = d.y;
+		}
+		
+		function dragged(d){
+			d.fx = d3.event.x;
+			d.fy = d3.event.y;
+		}
+		
+		function dragend(d){
+			if(!d3.event.active) sim.alphaTarget(0);
+			d.fx = null;
+			d.fy = null;
+		}
+		
+		function ticked(){
+			linkViz.attr("x1", function(d){return d.source.x;})
+			.attr("y1", function(d){return d.source.y;})
+			.attr("x2", function(d){return d.target.x;})
+			.attr("y2", function(d){return d.target.y;});
+			
+			nodesViz.attr("transform", function(d){return "translate("+d.x+","+d.y+")";});
+		}
+		
+		
+		
+		
+		</script>
+	
+	</body>
+</html>

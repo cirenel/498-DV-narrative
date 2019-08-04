@@ -37,20 +37,20 @@
 	</head>
 
 	<body onload='init()'>
-			
+		
 		<div style="float:left">
-			<svg width=500 height=500 id=yearrelease>
+			<svg width=500 height=500 id=yearsale>
 			</svg>
 		</div>
 		<div style="float:left">
-			<p>Since the birth of console and home gaming options in the 1980s, the video game industry has boomed.</p>
-			<p>Despite some early flops, the number of video game titles released every year has continued to grow. </p>
-			<a href = "slide2.html" style="float:right"> Next </a>
+			<p>With a rise in the number of released titles, the total global sales per year also increased. </p>
+			<p>There is a dip in sales after 2008. This could be in part due to app store game sales and mobile</br>gaming data not being included in the data use to generate these charts.</p>
 		</div>
+		
 		<div id = "tip"></div>
 		
 		<script>
-
+			
 		var data;
 		var margin = 50;
 		var height = 500;
@@ -62,69 +62,72 @@
 
 				var len = data.length;
 				
-				var xScale = d3.scaleLinear().domain([1980, 2017]).range([margin,500-margin]); 
-				var yScale = d3.scaleLinear().domain([1700, 5]).range([margin,500-margin]); 
+				var xScale = d3.scaleLinear().domain([1980, 2017]).range([margin,500-margin]);
+				var yScale = d3.scaleLinear().domain([750, 5]).range([margin,500-margin]); 
 				var colorScale = d3.scaleSequential(d3.interpolateViridis).domain([-1000, 2500]);
 				
 				var line = d3.line()
 				.x(function(d){return xScale(+d.year);})
-				.y(function(d){return yScale(+d.numGames);});
+				.y(function(d){return yScale(+d.globalSales);});
 				
-				d3.select("#yearrelease")
+				d3.select("#yearsale")
 				.append("g").append("path").data([data])
 				.attr("d", line)
 				.attr("stroke", "black").attr("stroke-width",1).attr("fill","none");
 				
 				var tip = d3.select("#tip");
 				
-				var xAnnote = 1982;
+				
+				var xAnnote = 2006;
 				var yAnnote = 0;
-				d3.select("#yearrelease").select("g").selectAll("circle").data(data).enter().append("circle")
-				.attr("r", 4).attr("fill", function(d){return ""+colorScale(+d.numGames);})
+				d3.select("#yearsale").select("g").selectAll("circle").data(data).enter().append("circle")
+				.attr("r", 4).attr("fill", function(d){return ""+colorScale(+d.globalSales);})
 				.attr("cx", function(d, i){return xScale(+d.year);})
 				.attr("cy", function(d, i){
 					if(+d.year == xAnnote){yAnnote = +d.globalSales;}
-					return yScale(+d.numGames);})
+					return yScale(+d.globalSales);})
 				.attr("stroke","none")
 				.on("mouseover", function (d){
 						tip.style("opacity", 1)
 						.style("left", (d3.event.pageX + 10)+"px")
 						.style("top", (d3.event.pageY -10)+"px")
-						.html(d.numGames+" games released in "+d.year);})
+						.html("$"+(+d.globalSales).toFixed(2) +" sold in "+d.year);})
 				.on("mouseout", function(){
 					tip.style("opacity", 0);});
-				
-				d3.select("#yearrelease").append("g").attr("transform","translate(0,"+ (height - margin) +" )").call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
-				d3.select("#yearrelease").append("g").attr("transform","translate(50,0)").call(d3.axisLeft(yScale)); 
-				
-				d3.select("#yearrelease")
-				.append("text").attr("transform", "translate("+(xScale(xAnnote)+5)+","+(yScale(yAnnote)-7)+" ) rotate(-90) ")
-				.attr("fill", "black").attr("text-anchor","start").html("Infamous ET Game Released");
+
+
+				d3.select("#yearsale")
+				.append("text").attr("transform", "translate("+(xScale(xAnnote)+5)+","+(yScale(yAnnote)+7)+" ) rotate(-90) ")
+				.attr("fill", "black").attr("text-anchor","end").html("The App Store Debuts");
 
 				
-				d3.select("#yearrelease").append("text")
+				d3.select("#yearsale").append("g").attr("transform","translate(0,"+ (height - margin) +" )").call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+				d3.select("#yearsale").append("g").attr("transform","translate("+margin+",0)").call(d3.axisLeft(yScale));
+				
+				
+				d3.select("#yearsale").append("text")
 				.attr("transform", "rotate(-90)")
 				.attr("y", 10)
 				.attr("x", 0-(height/2)) 
 				.style("text-anchor", "middle")
-				.text("Games Released");
+				.text("Sales in Millions of Dollars");
 
-				d3.select("#yearrelease").append("text")
+				d3.select("#yearsale").append("text")
 				.attr("y", height)
 				.attr("x", width/2) 
 				.style("text-anchor", "middle")
 				.text("Year");	
 
-				d3.select("#yearrelease").append("text")
+				d3.select("#yearsale").append("text")
 				.attr("y", margin)
 				.attr("x", width/2) 
 				.style("text-anchor", "middle")
-				.text("Games Released by Year");				
+				.text("Global Game Sales by Year");				
 				
 				
 			})
 			.catch(function(err){
-				console.log("boop "+data);
+				console.log("boop "+err);
 			})
 
 

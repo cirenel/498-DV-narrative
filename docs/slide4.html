@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src='https://d3js.org/d3.v5.min.js'></script>
+		<style>
+			#tip{
+				opacity : 0;
+				position : absolute;
+				text-align : center;
+				width : 100;
+				height : 30;
+				background : white;
+				border-width : 1px;
+				border-style : double;
+				border-color : black;
+				border-radius : 3px;
+				padding-top : 2px;
+				padding-bottom : 2px;
+				padding-left : 3px;
+				padding-right : 3px;
+				cursor :none;
+			}
+
+			
+			div{
+				border-width : 1px; 
+				border-radius: 3px;
+				border-color : black;
+				border-style : solid;
+				padding-top : 2px;
+				padding-bottom : 2px;
+				padding-left : 3px;
+				padding-right : 3px;
+			}
+			
+			.line{
+				fill : none;
+				stroke-width : 1px;
+			}
+		</style>
+		
+	</head>
+	<body onload='init()'>
+		<div class="slidecontainer" id="sliders"  style="float:right"><label for="cores">Select filter criteria </label>
+		   <div><input type="range" min="1980" max="2015" value="1980" class="slider" id="minYear" onchange='build()'> <label for="minYear">Min Year Selection </label>
+		   </div>
+		  <div><input type="range" min="1980" max="2015" value="2015" class="slider" id="maxYear" onchange='build()'> <label for="maxYear">Max Year Selection </label>
+		  </div>
+		 <div>
+		<p>If we break down the global sales figures by individual console platforms,<br>
+			we see similar trends. Several platforms break the trend of launching, <br>
+			peaking and then dying out. These are the darker lines that make there <br>
+			way from one side of the chart to the other without intruption. Namely, <br>
+			the PC and DS platforms have stood the test of time and relevancy. 
+		</p>
+		<a href = "slide3.html" style="float:left"> Previous </a> <a href = "slide5.html" style="float:right"> Next </a>
+	</div>
+		  
+		</div>
+		
+
+		<div id="chart" style="float:left" width =1000 height = 700>  
+			<svg width=900 height=600 id=consolesales>
+			</svg>
+		</div>
+	
+		<div id = "tip"></div>
+		
+		<script>
+		
+		var alldata;
+		var margin = 50;
+		var height = 600;
+		var width = 900;
+		
+		var annotations = [
+			{year: 2003, txt:"Steam platform launched."},
+			{year: 1997, txt:"First E-Sports leauge."},
+			{year: 1982, txt:"Infamous ET game released."},
+			{year: 1984, txt:"Tetris released."},
+			{year: 1996, txt: "Quake first to render real time in 3D."},
+			{year: 2006, txt:"Birth of the App Store."},
+			{year: 2011, txt:"Top grossing Minecraft released."},
+			{year: 1992, txt:"First afordable mass market CD drives."}
+		]
+		
+		async function init(){
+			data =  await d3.csv("https://raw.githubusercontent.com/cirenel/498-DV-narrative/master/salesbyconsole.csv")
+			.then(function(data){
+				this.alldata = data;
+				build();
+			})
+			.catch(function(err){
+				console.log("boop "+data);
+			})
+		}
+
+		function build(){
+			//reset svg
+			d3.select("#chart").html("<div width =1000 height = 700> <svg width=900 height=600 id=consolesales></svg></div>");
+			
+			//get min and max slider values
+			var minYear = +(document.getElementById('minYear').value);
+			var maxYear = +(document.getElementById('maxYear').value);
+			
+			//get filter data by year
+			var data = alldata.slice().sort((a,b) => d3.ascending(a.year, b.year));
+			data = data.filter(function(d){return d.year >= minYear;});
+			data = data.filter(function(d){return d.year <= maxYear;});
+
+			annote = annotations.filter(function(d){return d.year >= minYear;});
+			annote = annotations.filter(function(d){return d.year <= maxYear;});
+
+			//set up scale			
+			var xScale = d3.scaleLinear().domain([minYear, maxYear]).range([margin,width-margin]); //*could* check for minyear < maxyear but with how d3 does scales... it'll still show up ok 
+			var yScale = d3.scaleLinear().domain([260, -5]).range([margin,height-margin]); 
+			
+			//draw annotations
+			annote.forEach(function(ann, i){
+				var xAnnote = ann.year;
+				var yAnnote = height/2;
+				console.log(yAnnote);
+				console.log(yScale(yAnnote));
+				d3.select("#consolesales")
+				.append("text").attr("transform", "translate("+xScale(xAnnote)+","+yAnnote+" ) rotate(-90) ")
+				.attr("cursor","none").attr("fill", "grey").attr("text-anchor","middle").html(ann.txt);
+			});
+			
+			const consoles = [... new Set(data.map(data => data.con))]; //get unique list of consoles as a set
+			var colorScale = d3.scaleSequential(d3.interpolateViridis).domain([0, consoles.length-1]);
+							
+			//draw lines
+			consoles.forEach(function(con, i){
+				var line = d3.line()
+				.x(function(d){return xScale(+d.year);})
+				.y(function(d){return yScale(+d.sales);});
+
+				d3.select("#consolesales")
+				.append("g").append("path")
+				.data([data.filter(function(d){return d.con == con;})])
+				.attr("class","line")
+				.attr("d", line)
+				.attr("stroke", colorScale(i));
+			});
+			//tooltip setup
+			var tip = d3.select("#tip");
+
+
+			//draw circles & set up tooltip behavior 			
+			d3.select("#consolesales").select("g").selectAll("circle").data(data)
+			.enter().append("circle")
+			.attr("r", 3).attr("fill", function(d){return ""+colorScale(consoles.indexOf(d.con));})
+			.attr("cx", function(d, i){return xScale(+d.year);})
+			.attr("cy", function(d, i){	return yScale(+d.sales);})
+			.attr("stroke","none")
+			.on("mouseover", function (d){
+				tip.style("opacity", 1)
+				.style("left", (d3.event.pageX + 10)+"px")
+				.style("top", (d3.event.pageY -10)+"px")
+				.html(d.sales+" million in sales for "+d.con+" in "+d.year+".");})
+			.on("mouseout", function(){
+				tip.style("opacity", 0);});
+				
+
+			d3.select("#consolesales").append("g").attr("transform","translate(0,"+ (height - margin) +" )").call(d3.axisBottom(xScale).tickFormat(d3.format("d")).ticks((2015-1980)/2))
+			.call(g => g.selectAll(".tick:not(:first-of-type) line")
+			.attr("stroke-opacity", 0.5)
+			.attr("stroke-dasharray", "2,2"));
+
+			d3.select("#consolesales").append("g").attr("transform","translate("+margin+",0)").call(d3.axisLeft(yScale));
+			
+			
+			d3.select("#consolesales").append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 15)
+			.attr("x", 0-(height/2)) 
+			.style("text-anchor", "middle")
+			.text("Game Sales in Millions USD");
+
+			d3.select("#consolesales").append("text")
+			.attr("y", height)
+			.attr("x", width/2) 
+			.style("text-anchor", "middle")
+			.text("Year");	
+
+			d3.select("#consolesales").append("text")
+			.attr("y", margin)
+			.attr("x", width/2) 
+			.style("text-anchor", "middle")
+			.text("Game Sales per Console by Year in Millions of Dollars");				
+				
+				
+		}
+
+					
+		</script>
+	
+	</body>
+</html>
