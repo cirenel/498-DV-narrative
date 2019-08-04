@@ -40,7 +40,7 @@
 	<body onload='init()'>
 		<h1> An Exploration of Video Game Releases.</h1>
 		<div style="float:left">
-			<svg width=1100 height=500 id=yearrelease>
+			<svg width=1150 height=500 id=yearrelease>
 			</svg>
 		</div>
 		<div style="float:right">
@@ -56,7 +56,7 @@
 		var data;
 		var margin = 50;
 		var height = 500;
-		var width = 1100;
+		var width = 1150;
 		async function init(){
 
 			data =  await d3.csv("https://raw.githubusercontent.com/cirenel/498-DV-narrative/master/salesnumyear.csv")
