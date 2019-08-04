@@ -41,16 +41,17 @@
 	</head>
 
 	<body onload='init()'>
-		<div class="slidecontainer" id="sliders"  style="float:right"><label for="cores">Select filter criteria </label>
+		<div  class="slidecontainer" id="sliders"  style="float:right"><label for="cores">Select filter criteria </label>
 		   <div><input type="range" min="1980" max="2015" value="1980" class="slider" id="minYear" onchange='build()'> <label for="minYear">Min Year Selection </label>
 		   </div>
 		  <div><input type="range" min="1980" max="2015" value="2015" class="slider" id="maxYear" onchange='build()'> <label for="maxYear">Max Year Selection </label>
 		  </div>
 		 <div>
-				<p>If we break down the number of released games by individual console platforms,<br>
-					we can see several interesting trends. With new technology comes new consoles.<br>
-					After the release of a new console, we will see a rise in the number of releases<br>
-					which will peak and decline as the console becomes outdated. 
+				<p>If we break down the number of released<br> games by individual console platforms,<br>
+					we can see several interesting trends.<br> With new technology comes new consoles.<br>
+					After the release of a new console, we <br>will see a rise in the number of releases<br>
+					which will peak and decline as the <br>console becomes outdated. 
+
 				</p>
 				<a href = "slide2.html" style="float:left"> Previous </a> <a href = "slide4.html" style="float:right"> Next </a>
 		 </div>
@@ -58,8 +59,8 @@
 		</div>
 		
 
-		<div id="chart" style="float:left" width =1000 height = 700>  
-			<svg width=900 height=600 id=consoleyear>
+		<div id="chart" style="float:left" >  
+			<svg width=1150 height=700 id=consoleyear>
 			</svg>
 		</div>
 		
@@ -69,8 +70,8 @@
 		
 		var alldata;
 		var margin = 50;
-		var height = 600;
-		var width = 900;
+		var height = 700;
+		var width = 1150;
 		
 		//all annotations pulled from wikipedia... accuracy seems legit.
 		var annotations = [
@@ -97,7 +98,7 @@
 		
 		function build(){
 			//reset svg
-			d3.select("#chart").html("<div width =1000 height = 700> <svg width=900 height=600 id=consoleyear></svg></div>");
+			d3.select("#chart").html("<div width =1150 height = 700> <svg width=1150 height=700 id=consoleyear></svg></div>");
 
 			//get min and max slider values
 			var minYear = +(document.getElementById('minYear').value);

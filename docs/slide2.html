@@ -39,12 +39,13 @@
 	<body onload='init()'>
 		
 		<div style="float:left">
-			<svg width=500 height=500 id=yearsale>
+			<svg width=1150 height=500 id=yearsale>
 			</svg>
 		</div>
-		<div style="float:left">
-			<p>With a rise in the number of released titles, the total global sales per year also increased. </p>
-			<p>There is a dip in sales after 2008. This could be in part due to app store game sales and mobile</br>gaming data not being included in the data use to generate these charts.</p>
+		<div style="float:right">
+			<p>With a rise in the number of released titles,<br> the total global sales per year also increased. <br>
+			There is a dip in sales after 2008. This could be <br> in part due to app store game sales and mobile</br>
+			gaming data not being included in the data use to <br> generate these charts.</p>
 			<a href = "index.html" style="float:left"> Previous </a> <a href = "slide3.html" style="float:right"> Next </a>
 		</div>
 		
@@ -55,7 +56,7 @@
 		var data;
 		var margin = 50;
 		var height = 500;
-		var width = 500;
+		var width = 1150;
 		async function init(){
 
 			data =  await d3.csv("https://raw.githubusercontent.com/cirenel/498-DV-narrative/master/salesnumyear.csv")
@@ -63,8 +64,8 @@
 
 				var len = data.length;
 				
-				var xScale = d3.scaleLinear().domain([1980, 2017]).range([margin,500-margin]);
-				var yScale = d3.scaleLinear().domain([750, 5]).range([margin,500-margin]); 
+				var xScale = d3.scaleLinear().domain([1980, 2017]).range([margin,width-margin]);
+				var yScale = d3.scaleLinear().domain([750, 5]).range([margin,height-margin]); 
 				var colorScale = d3.scaleSequential(d3.interpolateViridis).domain([-1000, 2500]);
 				
 				var line = d3.line()

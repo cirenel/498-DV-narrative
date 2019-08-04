@@ -41,17 +41,17 @@
 		
 	</head>
 	<body onload='init()'>
-		<div class="slidecontainer" id="sliders"  style="float:right"><label for="cores">Select filter criteria </label>
+		<div class="slidecontainer" id="sliders"  style="float:right" width = 600><label for="cores">Select filter criteria </label>
 		   <div><input type="range" min="1980" max="2015" value="1980" class="slider" id="minYear" onchange='build()'> <label for="minYear">Min Year Selection </label>
 		   </div>
 		  <div><input type="range" min="1980" max="2015" value="2015" class="slider" id="maxYear" onchange='build()'> <label for="maxYear">Max Year Selection </label>
 		  </div>
 		 <div>
-		<p>If we break down the global sales figures by individual console platforms,<br>
-			we see similar trends. Several platforms break the trend of launching, <br>
-			peaking and then dying out. These are the darker lines that make there <br>
-			way from one side of the chart to the other without intruption. Namely, <br>
-			the PC and DS platforms have stood the test of time and relevancy. 
+		<p>If we break down the global sales figures <br> by individual console platforms,<br>
+			we see similar trends. Several platforms <br> break the trend of launching, <br>
+			peaking and then dying out. These are the <br> darker lines that make there <br>
+			way from one side of the chart to the other <br> without intruption. Namely, <br>
+			the PC and DS platforms have stood the test <br> of time and relevancy. 
 		</p>
 		<a href = "slide3.html" style="float:left"> Previous </a> <a href = "slide5.html" style="float:right"> Next </a>
 	</div>
@@ -60,7 +60,7 @@
 		
 
 		<div id="chart" style="float:left" width =1000 height = 700>  
-			<svg width=900 height=600 id=consolesales>
+			<svg width=1150 height=600 id=consolesales>
 			</svg>
 		</div>
 	
@@ -70,8 +70,8 @@
 		
 		var alldata;
 		var margin = 50;
-		var height = 600;
-		var width = 900;
+		var height = 700;
+		var width = 1150;
 		
 		var annotations = [
 			{year: 2003, txt:"Steam platform launched."},
@@ -97,7 +97,7 @@
 
 		function build(){
 			//reset svg
-			d3.select("#chart").html("<div width =1000 height = 700> <svg width=900 height=600 id=consolesales></svg></div>");
+			d3.select("#chart").html("<div width =1150 height = 700> <svg width=1150 height=700 id=consolesales></svg></div>");
 			
 			//get min and max slider values
 			var minYear = +(document.getElementById('minYear').value);
