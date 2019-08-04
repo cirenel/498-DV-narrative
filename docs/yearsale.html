@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src='https://d3js.org/d3.v5.min.js'></script>
+		<style>
+			#tip{
+				opacity : 0;
+				position : absolute;
+				text-align : center;
+				width : 100;
+				height : 30;
+				background : white;
+				border-width : 1px;
+				border-style :  double;
+				border-color : black;
+				border-radius : 3px;
+				padding-top : 2px;
+				padding-bottom : 2px;
+				padding-left : 3px;
+				padding-right : 3px;
+				cursor :none;
+			}
+			
+						
+			div{
+				border-width : 1px; 
+				border-radius: 3px;
+				border-color : black;
+				border-style : solid;
+				padding-top : 2px;
+				padding-bottom : 2px;
+				padding-left : 3px;
+				padding-right : 3px;
+			}
+		</style>
+		
+	</head>
+
+	<body onload='init()'>
+		
+		<div style="float:left">
+			<svg width=500 height=500 id=yearsale>
+			</svg>
+		</div>
+		
+		
+		<div id = "tip"></div>
+		
+		<script>
+			
+		var data;
+		var margin = 50;
+		var height = 500;
+		var width = 500;
+		async function init(){
+
+			data =  await d3.csv("https://raw.githubusercontent.com/cirenel/498-DV-narrative/master/salesnumyear.csv")
+			.then(function(data){
+
+				var len = data.length;
+				
+				var xScale = d3.scaleLinear().domain([1980, 2017]).range([margin,500-margin]);
+				var yScale = d3.scaleLinear().domain([750, 5]).range([margin,500-margin]); 
+				var colorScale = d3.scaleSequential(d3.interpolateViridis).domain([-1000, 2500]);
+				
+				var line = d3.line()
+				.x(function(d){return xScale(+d.year);})
+				.y(function(d){return yScale(+d.globalSales);});
+				
+				d3.select("#yearsale")
+				.append("g").append("path").data([data])
+				.attr("d", line)
+				.attr("stroke", "black").attr("stroke-width",1).attr("fill","none");
+				
+				var tip = d3.select("#tip");
+				
+				
+				var xAnnote = 2006;
+				var yAnnote = 0;
+				d3.select("#yearsale").select("g").selectAll("circle").data(data).enter().append("circle")
+				.attr("r", 4).attr("fill", function(d){return ""+colorScale(+d.globalSales);})
+				.attr("cx", function(d, i){return xScale(+d.year);})
+				.attr("cy", function(d, i){
+					if(+d.year == xAnnote){yAnnote = +d.globalSales;}
+					return yScale(+d.globalSales);})
+				.attr("stroke","none")
+				.on("mouseover", function (d){
+						tip.style("opacity", 1)
+						.style("left", (d3.event.pageX + 10)+"px")
+						.style("top", (d3.event.pageY -10)+"px")
+						.html("$"+(+d.globalSales).toFixed(2) +" sold in "+d.year);})
+				.on("mouseout", function(){
+					tip.style("opacity", 0);});
+
+
+				d3.select("#yearsale")
+				.append("text").attr("transform", "translate("+(xScale(xAnnote)+5)+","+(yScale(yAnnote)+7)+" ) rotate(-90) ")
+				.attr("fill", "black").attr("text-anchor","end").html("The App Store Debuts");
+
+				
+				d3.select("#yearsale").append("g").attr("transform","translate(0,"+ (height - margin) +" )").call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+				d3.select("#yearsale").append("g").attr("transform","translate("+margin+",0)").call(d3.axisLeft(yScale));
+				
+				
+				d3.select("#yearsale").append("text")
+				.attr("transform", "rotate(-90)")
+				.attr("y", 10)
+				.attr("x", 0-(height/2)) 
+				.style("text-anchor", "middle")
+				.text("Sales in Millions of Dollars");
+
+				d3.select("#yearsale").append("text")
+				.attr("y", height)
+				.attr("x", width/2) 
+				.style("text-anchor", "middle")
+				.text("Year");	
+
+				d3.select("#yearsale").append("text")
+				.attr("y", margin)
+				.attr("x", width/2) 
+				.style("text-anchor", "middle")
+				.text("Global Game Sales by Year");				
+				
+				
+			})
+			.catch(function(err){
+				console.log("boop "+err);
+			})
+
+
+		}
+			
+		</script>
+	
+	</body>
+</html>
